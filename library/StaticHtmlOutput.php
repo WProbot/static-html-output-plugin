@@ -116,7 +116,6 @@ class StaticHtmlOutput
 				->setOption('baseUrl', home_url())
 				->setOption('additionalUrls', '')
 				->setOption('generateZip', '')
-				->setOption('retainStaticFiles', '')
 				->save();
 		}
 	}
@@ -174,7 +173,6 @@ class StaticHtmlOutput
 				->assign('baseUrl', $this->_options->getOption('baseUrl'))
 				->assign('additionalUrls', $this->_options->getOption('additionalUrls'))
 				->assign('generateZip', $this->_options->getOption('generateZip'))
-				->assign('retainStaticFiles', $this->_options->getOption('retainStaticFiles'))
 				->assign('onceAction', self::HOOK . '-options')
 				->render();
 		}
@@ -202,7 +200,6 @@ class StaticHtmlOutput
 			->setOption('baseUrl', filter_input(INPUT_POST, 'baseUrl', FILTER_SANITIZE_URL))
 			->setOption('additionalUrls', filter_input(INPUT_POST, 'additionalUrls'))
 			->setOption('generateZip', filter_input(INPUT_POST, 'generateZip'))
-			->setOption('retainStaticFiles', filter_input(INPUT_POST, 'retainStaticFiles'))
 			->save();
 		
 		// Generate archive
@@ -216,10 +213,7 @@ class StaticHtmlOutput
 		else
 		{
 			$message = sprintf('Archive created successfully: <a href="%s">Download archive</a>', $archiveUrl);
-			if ($this->_options->getOption('retainStaticFiles') == 1)
-			{
-				$message .= sprintf('<br />Static files retained at: %s/', str_replace(home_url(),'',substr($archiveUrl,0,-4)));
-			}
+            $message .= sprintf('<br />Static files retained at: %s/', str_replace(home_url(),'',substr($archiveUrl,0,-4)));
 		}
 		
 		$this->_view->setTemplate('message')
@@ -327,33 +321,6 @@ class StaticHtmlOutput
 			unset($ftp);
 		}
 		
-		// Remove temporary files unless user requested to keep or needed for FTP transfer
-		if ($this->_options->getOption('retainStaticFiles') != 1)		
-		{
-			$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($archiveDir), RecursiveIteratorIterator::CHILD_FIRST);
-			foreach ($iterator as $fileName => $fileObject)
-			{
-					
-				// Remove file
-				if ($fileObject->isDir())
-				{
-					// Ignore special dirs
-					$dirName = basename($fileName);
-					if($dirName != '.' && $dirName != '..') {
-						rmdir($fileName);
-					}
-				}
-				else
-				{
-					unlink($fileName);
-				}
-			}
-			rmdir($archiveDir);
-		}	
-	
-	
-	
-	
 		return str_replace(ABSPATH, trailingslashit(home_url()), $archiveName . '.zip');
 	}
 	
