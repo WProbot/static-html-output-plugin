@@ -116,13 +116,7 @@ class StaticHtmlOutput
 				->setOption('baseUrl', home_url())
 				->setOption('additionalUrls', '')
 				->setOption('generateZip', '')
-				->setOption('cleanMeta', '')
 				->setOption('retainStaticFiles', '')
-				->setOption('sendViaFTP', '')
-				->setOption('ftpServer', '')
-				->setOption('ftpUsername', '')
-				->setOption('ftpPassword', '')
-				->setOption('ftpRemotePath', '')
 				->save();
 		}
 	}
@@ -180,12 +174,7 @@ class StaticHtmlOutput
 				->assign('baseUrl', $this->_options->getOption('baseUrl'))
 				->assign('additionalUrls', $this->_options->getOption('additionalUrls'))
 				->assign('generateZip', $this->_options->getOption('generateZip'))
-				->assign('cleanMeta', $this->_options->getOption('cleanMeta'))
 				->assign('retainStaticFiles', $this->_options->getOption('retainStaticFiles'))
-				->assign('sendViaFTP', $this->_options->getOption('sendViaFTP'))
-				->assign('ftpServer', $this->_options->getOption('ftpServer'))
-				->assign('ftpUsername', $this->_options->getOption('ftpUsername'))
-				->assign('ftpRemotePath', $this->_options->getOption('ftpRemotePath'))
 				->assign('onceAction', self::HOOK . '-options')
 				->render();
 		}
@@ -213,12 +202,7 @@ class StaticHtmlOutput
 			->setOption('baseUrl', filter_input(INPUT_POST, 'baseUrl', FILTER_SANITIZE_URL))
 			->setOption('additionalUrls', filter_input(INPUT_POST, 'additionalUrls'))
 			->setOption('generateZip', filter_input(INPUT_POST, 'generateZip'))
-			->setOption('cleanMeta', filter_input(INPUT_POST, 'cleanMeta'))
 			->setOption('retainStaticFiles', filter_input(INPUT_POST, 'retainStaticFiles'))
-			->setOption('sendViaFTP', filter_input(INPUT_POST, 'sendViaFTP'))
-			->setOption('ftpServer', filter_input(INPUT_POST, 'ftpServer'))
-			->setOption('ftpUsername', filter_input(INPUT_POST, 'ftpUsername'))
-			->setOption('ftpRemotePath', filter_input(INPUT_POST, 'ftpRemotePath'))		
 			->save();
 		
 		// Generate archive
@@ -279,8 +263,7 @@ class StaticHtmlOutput
 			
 			//echo "Processing ". $currentUrl."<br />";
 			
-			$urlResponse = new StaticHtmlOutput_UrlRequest($currentUrl, $this->_options->getOption('cleanMeta'));
-			$urlResponse->cleanup();
+			$urlResponse = new StaticHtmlOutput_UrlRequest($currentUrl);
 			
 			// Add current url to the list of processed urls
 			$this->_exportLog[$currentUrl] = true;

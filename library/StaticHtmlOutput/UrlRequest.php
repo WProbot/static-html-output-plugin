@@ -26,10 +26,9 @@ class StaticHtmlOutput_UrlRequest
 	 * Constructor
 	 * @param string $url URI resource
 	 */
-	public function __construct($url, $cleanMeta = false)
+	public function __construct($url)
 	{
 		$this->_url = filter_var($url, FILTER_VALIDATE_URL);
-		$this->_cleanMeta = $cleanMeta;
 		$response = wp_remote_get($this->_url,array('timeout'=>300)); //set a long time out
 		$this->_response = (is_wp_error($response) ? '' : $response);
 	}
@@ -81,23 +80,6 @@ class StaticHtmlOutput_UrlRequest
 	public function isHtml()
 	{
 		return stripos($this->getContentType(), 'html') !== false;
-	}
-	
-	/**
-	 * Removes WordPress-specific meta tags
-	 * @return void
-	 */
-	public function cleanup()
-	{
-		if ($this->isHtml())
-		{
-            if ($this->_cleanMeta)
-            {
-                $responseBody = preg_replace('/<link rel=["\' ](pingback|alternate|EditURI|wlwmanifest|index|profile|prev)["\' ](.*?)>/si', '', $this->getResponseBody());
-                $responseBody = preg_replace('/<meta name=["\' ]generator["\' ](.*?)>/si', '', $responseBody);
-                $this->setResponseBody($responseBody);
-            }
-		}
 	}
 	
 	/**
